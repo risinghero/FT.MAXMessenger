@@ -160,9 +160,3 @@ dotnet user-secrets set "MAX:TestChatId" "<chat-id>" --project .\MAXMessenger.Te
 
 Официальная документация MAX API:
 - `https://dev.max.ru/docs-api`
-
-## Планы по публикации
-
-README подготовлен так, чтобы одинаково хорошо смотреться:
-- в репозитории на GitHub;
-- на странице пакета в NuGet.

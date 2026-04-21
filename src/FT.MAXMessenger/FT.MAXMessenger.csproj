@@ -3,8 +3,8 @@
         <OutputType>Library</OutputType>
         <IsPackable>true</IsPackable>
         <PackageId>FT.MAXMessenger</PackageId>
-        <Version>1.0.0</Version>
-        <PackageVersion>1.0.0</PackageVersion>
+        <Version>1.0.2</Version>
+        <PackageVersion>1.0.2</PackageVersion>
         <RepositoryUrl>https://github.com/risinghero/FT.MAXMessenger</RepositoryUrl>
         <PackageProjectUrl>https://github.com/risinghero/FT.MAXMessenger</PackageProjectUrl>
         <PackageLicenseExpression>MIT</PackageLicenseExpression>
@@ -24,7 +24,6 @@
     </PropertyGroup>
     <ItemGroup>
         <PackageReference Include="Newtonsoft.Json" Version="13.0.4" />
-        <PackageReference Include="System.Net.Http.WinHttpHandler" Version="10.0.6" />
     </ItemGroup>
     <ItemGroup>
         <None Include="README.md" Pack="true" PackagePath="" />
