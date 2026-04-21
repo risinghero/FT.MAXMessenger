@@ -1,0 +1,62 @@
+name: Publish NuGet package
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Package version override, for example 1.0.1'
+        required: false
+        type: string
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    env:
+      PROJECT_PATH: src/FT.MAXMessenger/FT.MAXMessenger.csproj
+      PACKAGE_OUTPUT_DIRECTORY: ${{ github.workspace }}/artifacts/packages
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup .NET SDK
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: |
+            9.0.x
+
+      - name: Resolve package version
+        id: version
+        shell: pwsh
+        run: |
+          $version = '${{ github.event.inputs.version }}'
+
+          if ([string]::IsNullOrWhiteSpace($version)) {
+              $version = '${{ github.ref_name }}'
+          }
+
+          if ([string]::IsNullOrWhiteSpace($version)) {
+              throw 'Package version is required. Use a tag like v1.0.1 or provide the version in workflow_dispatch.'
+          }
+
+          if ($version.StartsWith('v')) {
+              $version = $version.Substring(1)
+          }
+
+          "package-version=$version" >> $env:GITHUB_OUTPUT
+
+      - name: Restore
+        run: dotnet restore $PROJECT_PATH
+
+      - name: Build
+        run: dotnet build $PROJECT_PATH --configuration Release --no-restore
+
+      - name: Pack
+        run: dotnet pack $PROJECT_PATH --configuration Release --no-build --output $PACKAGE_OUTPUT_DIRECTORY -p:Version=${{ steps.version.outputs.package-version }} -p:PackageVersion=${{ steps.version.outputs.package-version }}
+
+      - name: Publish to NuGet
+        run: dotnet nuget push "$PACKAGE_OUTPUT_DIRECTORY/*.nupkg" --api-key "${{ secrets.NUGET_API_KEY }}" --source https://api.nuget.org/v3/index.json --skip-duplicate
