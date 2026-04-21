@@ -1,0 +1,32 @@
+<Project Sdk="Microsoft.NET.Sdk">
+    <PropertyGroup>
+        <OutputType>Library</OutputType>
+        <IsPackable>true</IsPackable>
+        <PackageId>FT.MAXMessenger</PackageId>
+        <Version>1.0.0</Version>
+        <PackageVersion>1.0.0</PackageVersion>
+        <RootNamespace>FT.MAXMessenger</RootNamespace>
+        <AssemblyName>FT.MAXMessenger</AssemblyName>
+        <Title>FT.MAXMessenger</Title>
+        <Product>FT.MAXMessenger</Product>
+        <Company>Flagman Technologies</Company>
+        <Authors>Flagman Technologies</Authors>
+        <TargetFrameworks>netstandard2.0;netstandard2.1</TargetFrameworks>
+        <LangVersion>latest</LangVersion>
+        <Nullable>enable</Nullable>
+        <Description>.NET client for MAX HTTP API with support for bots, messages, chats, subscriptions, updates and media operations.</Description>
+        <PackageTags>max;messenger;bot;api;client</PackageTags>
+        <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
+        <PackageReadmeFile>README.md</PackageReadmeFile>
+    </PropertyGroup>
+    <ItemGroup>
+        <PackageReference Include="Newtonsoft.Json" Version="13.0.4" />
+        <PackageReference Include="System.Net.Http.WinHttpHandler" Version="10.0.6" />
+    </ItemGroup>
+    <ItemGroup>
+        <None Include="README.md" Pack="true" PackagePath="" />
+    </ItemGroup>
+</Project>
+
+
+
