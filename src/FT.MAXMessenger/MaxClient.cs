@@ -39,7 +39,7 @@ namespace FT.MAXMessenger
         /// <summary>
         /// Общий HTTP-клиент для сценария, когда внешний экземпляр <see cref="HttpClient"/> не передан.
         /// </summary>
-        private static readonly HttpClient SharedHttpClient = new(new WinHttpHandler());
+        private static readonly HttpClient SharedHttpClient = new();
 
         /// <summary>
         /// Настройки сериализации JSON в формате, ожидаемом API MAX.
