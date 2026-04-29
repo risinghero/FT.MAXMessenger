@@ -1,3 +1,5 @@
+using System.IO;
+using System.Net.Http;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -160,6 +162,118 @@ namespace FT.MAXMessenger.Tests
             Assert.NotNull(result);
             Assert.False(string.IsNullOrWhiteSpace(result.Url));
             Assert.False(string.IsNullOrWhiteSpace(result.Token));
+        }
+
+        [Fact]
+        public async Task UploadFile_AndSendMessageWithAttachment_MessageListContainsFile()
+        {
+            if (!CanRunChatIntegrationTests())
+                return;
+
+            var client = CreateClient();
+            var chatId = GetTestChatId();
+            var upload = await client.CreateUpload(new MaxCreateUploadRequest
+            {
+                Type = MaxUploadTypes.File
+            });
+
+            Assert.NotNull(upload);
+            Assert.False(string.IsNullOrWhiteSpace(upload.Url));
+
+            var text = $"Integration test file message {System.DateTimeOffset.UtcNow:O}";
+            object payload;
+
+            using (var stream = new MemoryStream(System.Text.Encoding.UTF8.GetBytes(text)))
+            {
+                payload = await client.UploadFile(upload.Url, stream, "integration-test-file.txt", "text/plain");
+            }
+
+            Assert.NotNull(payload);
+
+            var request = new MaxSendMessageRequest
+            {
+                ChatId = chatId,
+                Text = text,
+                Attachments = new[]
+                {
+                    new MaxAttachment
+                    {
+                        Type = MaxUploadTypes.File,
+                        Payload = payload
+                    }
+                }
+            };
+
+            MaxMessage sentMessage = null;
+            HttpRequestException sendException = null;
+
+            for (var attempt = 0; attempt < 10; attempt++)
+            {
+                try
+                {
+                    sentMessage = await client.SendMessage(request);
+                    sendException = null;
+                    break;
+                }
+                catch (HttpRequestException ex)
+                {
+                    sendException = ex;
+                    await Task.Delay(2000);
+                }
+            }
+
+            if (sendException != null)
+                throw sendException;
+
+            Assert.NotNull(sentMessage);
+            Assert.NotNull(sentMessage.Body);
+            Assert.False(string.IsNullOrWhiteSpace(sentMessage.Body.Mid));
+            Assert.Equal(text, sentMessage.Body.Text);
+
+            MaxMessage matchedMessage = null;
+
+            for (var attempt = 0; attempt < 10; attempt++)
+            {
+                var messages = await client.GetMessages(new MaxMessagesQuery
+                {
+                    MessageIds = new[]
+                    {
+                        sentMessage.Body.Mid
+                    }
+                });
+
+                if (messages?.Messages != null)
+                {
+                    for (var i = 0; i < messages.Messages.Count; i++)
+                    {
+                        var message = messages.Messages[i];
+                        if (message?.Body == null || message.Body.Text != text || message.Body.Attachments == null)
+                            continue;
+
+                        for (var j = 0; j < message.Body.Attachments.Count; j++)
+                        {
+                            var attachment = message.Body.Attachments[j];
+                            if (attachment != null && attachment.Type == MaxUploadTypes.File)
+                            {
+                                matchedMessage = message;
+                                break;
+                            }
+                        }
+
+                        if (matchedMessage != null)
+                            break;
+                    }
+                }
+
+                if (matchedMessage != null)
+                    break;
+
+                await Task.Delay(2000);
+            }
+
+            Assert.NotNull(matchedMessage);
+            Assert.NotNull(matchedMessage.Body);
+            Assert.NotNull(matchedMessage.Body.Attachments);
         }
     }
 }

@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Newtonsoft.Json;
 
 namespace FT.MAXMessenger
 {
@@ -8,6 +9,12 @@ namespace FT.MAXMessenger
     /// </summary>
     public class MaxNewMessageBody
     {
+        /// <summary>
+        /// Текст сообщения.
+        /// </summary>
+        [JsonProperty("mid")]
+        public string Mid { get; set; }
+
         /// <summary>
         /// Текст сообщения.
         /// </summary>

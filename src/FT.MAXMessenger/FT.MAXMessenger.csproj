@@ -3,8 +3,8 @@
         <OutputType>Library</OutputType>
         <IsPackable>true</IsPackable>
         <PackageId>FT.MAXMessenger</PackageId>
-        <Version>1.0.3</Version>
-        <PackageVersion>1.0.3</PackageVersion>
+        <Version>1.0.4</Version>
+        <PackageVersion>1.0.4</PackageVersion>
         <RepositoryUrl>https://github.com/risinghero/FT.MAXMessenger</RepositoryUrl>
         <PackageProjectUrl>https://github.com/risinghero/FT.MAXMessenger</PackageProjectUrl>
         <PackageLicenseExpression>MIT</PackageLicenseExpression>

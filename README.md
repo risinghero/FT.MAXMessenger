@@ -7,7 +7,7 @@
 - отправка и чтение сообщений;
 - работа с чатами и участниками;
 - WebHook-подписки и long polling;
-- загрузка медиа и получение информации о видео;
+- получение ссылки для загрузки файлов, загрузка медиа и получение информации о видео;
 - ответы на callback.
 
 ## Поддерживаемые платформы
@@ -87,6 +87,40 @@ var updates = await client.GetUpdates(new MaxUpdatesQuery
 });
 ```
 
+### Загрузка файла и отправка сообщения с вложением
+
+```csharp
+using System.IO;
+
+var upload = await client.CreateUpload(new MaxCreateUploadRequest
+{
+    Type = MaxUploadTypes.Video
+});
+
+using var stream = File.OpenRead("movie.mp4");
+var payload = await client.UploadFile(upload.Url, stream, "movie.mp4", "video/mp4");
+
+var messageWithAttachment = await client.SendMessage(new MaxSendMessageRequest
+{
+    ChatId = "<chat-id>",
+    Text = "Видео из .NET",
+    Attachments = new[]
+    {
+        new MaxAttachment
+        {
+            Type = MaxUploadTypes.Video,
+            Payload = payload
+        }
+    }
+});
+```
+
+Поддерживаемые типы загрузки:
+- `MaxUploadTypes.Image`
+- `MaxUploadTypes.Video`
+- `MaxUploadTypes.Audio`
+- `MaxUploadTypes.File`
+
 ## Что реализовано
 
 В библиотеке уже реализованы разделы API:
@@ -97,7 +131,7 @@ var updates = await client.GetUpdates(new MaxUpdatesQuery
 - `Files and media`
 - `Chats`
 
-Полный список методов см. в файле [`API_METHODS.md`](API_METHODS.md).
+Полный список методов см. в файле [`src/FT.MAXMessenger/API_METHODS.md`](src/FT.MAXMessenger/API_METHODS.md).
 
 ## Основные возможности `MaxClient`
 
@@ -121,6 +155,7 @@ var updates = await client.GetUpdates(new MaxUpdatesQuery
 
 ### Files and media
 - `CreateUpload(...)`
+- `UploadFile(...)`
 - `GetVideo(...)`
 
 ### Chats
@@ -143,13 +178,13 @@ var updates = await client.GetUpdates(new MaxUpdatesQuery
 
 ## Тесты
 
-Интеграционные тесты находятся в проекте `MAXMessenger.Tests`.
+Интеграционные тесты находятся в проекте `FT.MAXMessenger.Tests`.
 
 Для запуска нужно настроить секреты:
 
 ```powershell
-dotnet user-secrets set "MAX:AccessToken" "<access-token>" --project .\MAXMessenger.Tests\MAXMessenger.Tests.csproj
-dotnet user-secrets set "MAX:TestChatId" "<chat-id>" --project .\MAXMessenger.Tests\MAXMessenger.Tests.csproj
+dotnet user-secrets set "MAX:AccessToken" "<access-token>" --project .\tests\FT.MAXMessenger.Tests\FT.MAXMessenger.Tests.csproj
+dotnet user-secrets set "MAX:TestChatId" "<chat-id>" --project .\tests\FT.MAXMessenger.Tests\FT.MAXMessenger.Tests.csproj
 ```
 
 Дополнительно можно использовать переменные окружения:

@@ -1,8 +1,11 @@
+using Newtonsoft.Json;
+
 namespace FT.MAXMessenger
 {
     /// <summary>
     /// Универсальная модель вложения сообщения.
     /// </summary>
+    [JsonConverter(typeof(MaxAttachmentJsonConverter))]
     public class MaxAttachment
     {
         /// <summary>
