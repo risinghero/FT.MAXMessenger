@@ -121,10 +121,17 @@ namespace FT.MAXMessenger.Tests
             if (messages == null || messages.Messages == null || messages.Messages.Count == 0)
                 return;
 
-            var result = await client.GetMessage(messages.Messages[0].MessageId);
+            var messageId = messages.Messages[0].MessageId;
+            if (string.IsNullOrWhiteSpace(messageId))
+                messageId = messages.Messages[0].Body?.Mid;
+
+            if (string.IsNullOrWhiteSpace(messageId))
+                return;
+
+            var result = await client.GetMessage(messageId);
 
             Assert.NotNull(result);
-            Assert.Equal(messages.Messages[0].MessageId, result.MessageId);
+            Assert.True(result.MessageId == messageId || result.Body?.Mid == messageId);
         }
 
         [Fact]
@@ -216,6 +223,19 @@ namespace FT.MAXMessenger.Tests
                 var update = nextUpdates.Updates[i];
                 Assert.NotNull(update);
                 Assert.False(string.IsNullOrWhiteSpace(update.UpdateType));
+
+                if (update.Message == null)
+                    continue;
+
+                Assert.NotNull(update.Message.Recipient);
+                Assert.False(string.IsNullOrWhiteSpace(update.Message.Recipient.ChatType));
+                Assert.False(string.IsNullOrWhiteSpace(update.Message.Recipient.ChatId));
+                Assert.NotNull(update.Message.Body);
+                Assert.False(string.IsNullOrWhiteSpace(update.Message.Body.Mid));
+                Assert.True(update.Message.Body.Seq.HasValue);
+                Assert.NotNull(update.Message.Sender);
+                Assert.True(update.Message.Sender.UserId.HasValue);
+                Assert.False(string.IsNullOrWhiteSpace(update.Message.Sender.FirstName));
             }
         }
 

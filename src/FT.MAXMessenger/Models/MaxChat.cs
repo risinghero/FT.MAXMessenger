@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+using Newtonsoft.Json.Linq;
 
 namespace FT.MAXMessenger
 {
@@ -28,7 +28,7 @@ namespace FT.MAXMessenger
 
         public int? ParticipantsCount { get; set; }
 
-        public IList<MaxChatMember> Participants { get; set; }
+        public JToken Participants { get; set; }
 
         public MaxMessage PinnedMessage { get; set; }
 

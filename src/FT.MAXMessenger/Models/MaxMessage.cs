@@ -23,7 +23,7 @@ namespace FT.MAXMessenger
         /// <summary>
         /// Получатель сообщения.
         /// </summary>
-        public MaxUser Recipient { get; set; }
+        public MaxMessageRecipient Recipient { get; set; }
 
         /// <summary>
         /// Тело сообщения.

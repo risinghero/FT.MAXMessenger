@@ -10,10 +10,15 @@ namespace FT.MAXMessenger
     public class MaxNewMessageBody
     {
         /// <summary>
-        /// Текст сообщения.
+        /// Идентификатор сообщения внутри чата.
         /// </summary>
         [JsonProperty("mid")]
         public string Mid { get; set; }
+
+        /// <summary>
+        /// Последовательный номер сообщения.
+        /// </summary>
+        public long? Seq { get; set; }
 
         /// <summary>
         /// Текст сообщения.
