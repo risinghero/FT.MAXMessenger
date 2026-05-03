@@ -165,6 +165,61 @@ namespace FT.MAXMessenger.Tests
         }
 
         [Fact]
+        public async Task GetUpdates_ReturnsResponse()
+        {
+            if (!CanRunIntegrationTests())
+                return;
+
+            var client = CreateClient();
+
+            var result = await client.GetUpdates(new MaxUpdatesQuery
+            {
+                Limit = 10,
+                Timeout = 1
+            });
+
+            Assert.NotNull(result);
+            Assert.NotNull(result.Updates);
+        }
+
+        [Fact]
+        public async Task GetUpdates_WithMarker_ReturnsConsistentResponse()
+        {
+            if (!CanRunIntegrationTests())
+                return;
+
+            var client = CreateClient();
+            var initialUpdates = await client.GetUpdates(new MaxUpdatesQuery
+            {
+                Limit = 1,
+                Timeout = 1
+            });
+
+            Assert.NotNull(initialUpdates);
+            Assert.NotNull(initialUpdates.Updates);
+            Assert.True(initialUpdates.Marker.HasValue);
+
+            var nextUpdates = await client.GetUpdates(new MaxUpdatesQuery
+            {
+                Limit = 1,
+                Timeout = 1,
+                Marker = initialUpdates.Marker
+            });
+
+            Assert.NotNull(nextUpdates);
+            Assert.NotNull(nextUpdates.Updates);
+            Assert.True(nextUpdates.Marker.HasValue);
+            Assert.True(nextUpdates.Marker.Value >= initialUpdates.Marker.Value);
+
+            for (var i = 0; i < nextUpdates.Updates.Count; i++)
+            {
+                var update = nextUpdates.Updates[i];
+                Assert.NotNull(update);
+                Assert.False(string.IsNullOrWhiteSpace(update.UpdateType));
+            }
+        }
+
+        [Fact]
         public async Task UploadFile_AndSendMessageWithAttachment_MessageListContainsFile()
         {
             if (!CanRunChatIntegrationTests())
