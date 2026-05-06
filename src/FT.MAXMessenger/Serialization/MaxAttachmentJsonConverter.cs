@@ -22,7 +22,7 @@ namespace FT.MAXMessenger
             {
                 writer.WritePropertyName("payload");
                 if (value.Payload is JToken token)
-                    token.WriteTo(writer);
+                    serializer.Serialize(writer, token);
                 else
                     serializer.Serialize(writer, value.Payload);
             }

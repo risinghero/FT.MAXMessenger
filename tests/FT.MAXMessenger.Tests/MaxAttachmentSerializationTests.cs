@@ -35,5 +35,19 @@ namespace FT.MAXMessenger.Tests
             Assert.Contains("\"payload\":{\"fileId\":3379897271,\"token\":\"abc\"}", json);
             Assert.DoesNotContain("file_id", json);
         }
+
+        [Fact]
+        public void AttachmentPayload_JToken_SerializesWithoutMethodNotFoundError()
+        {
+            var attachment = new MaxAttachment
+            {
+                Type = MaxUploadTypes.File,
+                Payload = JToken.Parse("{\"fileId\":3379897271,\"token\":\"abc\"}")
+            };
+
+            var exception = Record.Exception(() => JsonConvert.SerializeObject(attachment));
+
+            Assert.Null(exception);
+        }
     }
 }
